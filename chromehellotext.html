@@ -101,10 +101,9 @@ function onStopAppSuccess() {
  * session listener during initialization
  */
 function sessionListener(e) {
-  appendMessage('New session ID:' + e.sessionId);
+  appendMessage('Existing session ID:' + e.sessionId);
   session = e;
-  session.addUpdateListener(sessionUpdateListener);  
-  session.addMessageListener(namespace, receiverMessage);
+	prepareListeners(session);
 }
 
 /**
@@ -159,9 +158,18 @@ function sendMessage(message) {
   else {
     chrome.cast.requestSession(function(e) {
         session = e;
+				prepareListeners(session);
         session.sendMessage(namespace, message, onSuccess.bind(this, "Message sent: " + message), onError);
       }, onError);
   }
+}
+/**
+ * add listeners to session. Both for existing
+ * and a new session.
+ */
+function prepareListeners(s){
+  s.addUpdateListener(sessionUpdateListener);  
+  s.addMessageListener(namespace, receiverMessage);
 }
 
 /**
